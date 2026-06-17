@@ -249,7 +249,9 @@ body.is-empty main {
 
 table.xlsx-table {
   border-collapse: collapse;
-  width: auto;
+  /* 依內容自然寬度（欄多時超過視窗 → .sheet-panel 橫向捲動）；至少填滿面板寬 */
+  width: max-content;
+  min-width: 100%;
   font-size: 14px;
   color: var(--tbl-cell-fg);
   background: var(--tbl-bg);
@@ -451,14 +453,15 @@ table.xlsx-table tbody tr:hover td {
 /* ===== 右上角工具列開關（無外框、純 icon；只在本 app，不動共用 side-tool.css） ===== */
 .tools-toggle {
   position: fixed;
-  top: 12px;
-  right: 14px;
+  top: 0;
+  right: 12px;
   z-index: 1003;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 40px;
-  height: 40px;
+  height: 39px;
+  /* 高度貼齊 toolbar，icon 垂直對齊檔名列（右上角） */
   cursor: pointer;
   color: var(--muted);
   background: transparent;

@@ -51,7 +51,8 @@ xlsx-viewer.js（控制器，碰 DOM）
 ### 4.2 `xlsx-viewer.css`（主題 token + 樣式）
 - 家族標準 token + `--mz-*` 映射。
 - **表格 token**：`--tbl-bg / --tbl-cell-fg / --tbl-border / --tbl-head-bg / --tbl-head-fg / --tbl-zebra / --tbl-hover` + 型別色 `--cell-bool / --cell-date / --cell-error`，兩主題各一份——**深色主題下表格也轉深**。
-- sticky 欄頭（`thead th`）/ 列頭（`th.row-head`）；斑馬紋；型別 class（`.cell-num` 右對齊 tabular-nums…）。
+- sticky 欄頭（`thead th`）/ 列頭（`th.row-head`，橫向捲動時 `left:0` 固定；corner 兩軸固定）；斑馬紋；型別 class（`.cell-num` 右對齊 tabular-nums…）。
+- **表格寬度**：`table.xlsx-table { width: max-content; min-width: 100% }`——依內容自然寬度排，**欄多到超過視窗時整表變寬、`.sheet-panel` 橫向捲動**（而非把欄壓扁）；欄少時 `min-width:100%` 仍填滿面板。單格 `max-width:480px` + `pre-wrap`/`word-break` 讓長內容換行不撐爆。
 - **全視窗版面**：`#xv-doc` 是撐滿 `100vh` 的 flex 欄（`.xv-toolbar` / `#xv-tabs-wrap` `flex:0 0 auto`、`#xv-container` `flex:1; min-height:0`），表格 edge-to-edge、**單一捲動區在 `.sheet-panel`**（`height:100%; overflow:auto`，表頭/列頭在面板內 sticky）；`.app-container` 滿版（無 max-width 卡片框）；`body:not(.is-empty){overflow:hidden}` 避免頁面 + 面板雙捲軸；空狀態仍置中（`.empty-state{max-width:720px;margin:0 auto}`）。
 - `@media print`：解除全視窗鎖定（`#xv-doc` height auto、`body`/`#xv-container` overflow visible）、白底黑字、所有 sheet 展開。
 
