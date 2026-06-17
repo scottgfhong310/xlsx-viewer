@@ -87,7 +87,12 @@ body {
 }
 
 main {
-  padding: 18px 0 48px;
+  padding: 0;
+}
+
+/* 已載入：滿版，捲動交給 .sheet-panel（避免頁面 + 面板雙捲軸） */
+body:not(.is-empty) {
+  overflow: hidden;
 }
 
 body.is-empty main {
@@ -100,9 +105,8 @@ body.is-empty main {
 }
 
 .app-container {
-  width: 94%;
-  max-width: 1400px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 }
 
 /* ===== 空狀態 / 拖拉提示 ===== */
@@ -113,6 +117,8 @@ body.is-empty main {
   justify-content: center;
   text-align: center;
   min-height: 340px;
+  max-width: 720px;
+  margin: 0 auto;
   color: var(--muted);
   border: 2px dashed var(--drop-border);
   border-radius: 12px;
@@ -155,19 +161,20 @@ body.is-empty main {
 /* ===== 已載入：toolbar + sheet tabs + 表格 ===== */
 #xv-doc {
   display: none;
+  /* 顯示時控制器設 display:flex；撐滿視窗高度：toolbar/tabs 固定、表格面板填滿並內部捲動 */
+  flex-direction: column;
+  height: 100vh;
 }
 
 .xv-toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 12;
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 12px;
+  padding: 8px 14px;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px 10px 0 0;
+  border: 0;
+  border-bottom: 1px solid var(--border);
   font-size: 13px;
 }
 
@@ -192,12 +199,9 @@ body.is-empty main {
 
 /* Sheet tabs（Materialize .tabs；深色由 materialize-dark.css，indicator/active 跟 --accent） */
 #xv-tabs-wrap {
-  position: sticky;
-  top: 41px;
-  z-index: 11;
+  flex: 0 0 auto;
   background: var(--surface);
-  border-left: 1px solid var(--border);
-  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 #xv-tabs-wrap .tabs {
@@ -223,15 +227,15 @@ body.is-empty main {
 
 /* 工作表面板（內部捲動 + sticky 表頭） */
 #xv-container {
-  border: 1px solid var(--border);
-  border-top: 0;
-  border-radius: 0 0 10px 10px;
+  flex: 1 1 auto;
+  min-height: 0;
   background: var(--surface);
+  overflow: hidden;
 }
 
 .sheet-panel {
+  height: 100%;
   overflow: auto;
-  max-height: calc(100vh - 200px);
 }
 
 .sheet-panel:not(.active) {
@@ -445,14 +449,6 @@ table.xlsx-table tbody tr:hover td {
 }
 
 @media (max-width: 700px) {
-  .app-container {
-    width: 100%;
-  }
-
-  .sheet-panel {
-    max-height: calc(100vh - 190px);
-  }
-
   table.xlsx-table th,
   table.xlsx-table td {
     padding: 4px 6px;
@@ -481,9 +477,22 @@ table.xlsx-table tbody tr:hover td {
     background: #fff !important;
   }
 
-  /* 列印一律白底黑字、所有 sheet 都展開 */
+  /* 列印解除全視窗鎖定：回到一般流、所有 sheet 展開 */
+  body {
+    overflow: visible !important;
+  }
+
+  #xv-doc {
+    height: auto !important;
+  }
+
+  #xv-container {
+    overflow: visible !important;
+  }
+
   .sheet-panel {
     display: block !important;
+    height: auto !important;
     max-height: none !important;
     overflow: visible !important;
   }

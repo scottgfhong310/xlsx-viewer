@@ -52,7 +52,8 @@ xlsx-viewer.js（控制器，碰 DOM）
 - 家族標準 token + `--mz-*` 映射。
 - **表格 token**：`--tbl-bg / --tbl-cell-fg / --tbl-border / --tbl-head-bg / --tbl-head-fg / --tbl-zebra / --tbl-hover` + 型別色 `--cell-bool / --cell-date / --cell-error`，兩主題各一份——**深色主題下表格也轉深**。
 - sticky 欄頭（`thead th`）/ 列頭（`th.row-head`）；斑馬紋；型別 class（`.cell-num` 右對齊 tabular-nums…）。
-- `@media print`：白底黑字、所有 sheet 展開。
+- **全視窗版面**：`#xv-doc` 是撐滿 `100vh` 的 flex 欄（`.xv-toolbar` / `#xv-tabs-wrap` `flex:0 0 auto`、`#xv-container` `flex:1; min-height:0`），表格 edge-to-edge、**單一捲動區在 `.sheet-panel`**（`height:100%; overflow:auto`，表頭/列頭在面板內 sticky）；`.app-container` 滿版（無 max-width 卡片框）；`body:not(.is-empty){overflow:hidden}` 避免頁面 + 面板雙捲軸；空狀態仍置中（`.empty-state{max-width:720px;margin:0 auto}`）。
+- `@media print`：解除全視窗鎖定（`#xv-doc` height auto、`body`/`#xv-container` overflow visible）、白底黑字、所有 sheet 展開。
 
 ### 4.3 `xlsx-viewer-lib.js`（核心 library，`window.XlsxViewerLib`，純邏輯、不碰 DOM）
 除了家族共通的 `parseQuery` / `isSafeLink` / `isUploadable`（`/\.(xlsx|xlsm|xls|csv)$/i`）/ `encodePath` / `fileUrl` / `listFiles` / `uploadFile` / `clearFolder` / `basename` / `formatSize` / `timestamp`，本支額外把**解析與表格產生**也放進 lib：
@@ -78,6 +79,7 @@ xlsx-viewer.js（控制器，碰 DOM）
 4. **白名單 xlsx/xlsm/xls/csv。** SheetJS 本就能讀，多收成本低（一條 regex），更實用；app 名與 folder 維持 `xlsx-viewer`。
 5. **多工作表 UI：Materialize tabs。** 單一工作表時隱藏 tab bar（避免單顆 fixed-width tab 佔滿一列的突兀）。
 6. **下載走側鍵**（家族 §4.7）。
+7. **全視窗版面（非置中卡片）。** 試算表常欄多、列長，置中 `max-width` 卡片浪費橫向空間且雙捲軸卡頓 → 改 edge-to-edge 滿版：`#xv-doc` 撐滿 `100vh`、toolbar/tabs 固定、表格面板填滿下方並**單一內部捲動**（表頭/列頭 sticky）。空狀態維持置中卡片感。控制器 `showDoc` 顯示時設 `display:flex`（非 `block`）。
 
 ## 6. lib / 控制器邊界（家族 §4.7）
 

@@ -59,7 +59,8 @@
   /* ---------- 顯示切換 ---------- */
 
   function showDoc(show) {
-    docBox.style.display = show ? 'block' : 'none';
+    // 全視窗版面：#xv-doc 是撐滿 100vh 的 flex 欄（CSS）；顯示時給明確 'flex'（'' 會落回 CSS 的 none）
+    docBox.style.display = show ? 'flex' : 'none';
     emptyState.style.display = show ? 'none' : '';
     document.body.classList.toggle('is-empty', !show);
     // 下載側鍵只在有開檔時出現（.side-tool 預設 flex）
