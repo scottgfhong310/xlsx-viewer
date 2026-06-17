@@ -25,7 +25,7 @@
   var tabs = document.getElementById('xv-tabs');
   var container = document.getElementById('xv-container');
   var docName = document.getElementById('xv-doc-name');
-  var docOpen = document.getElementById('xv-doc-open');
+  var downloadBtn = document.getElementById('setting-download');
   var sideNav = document.getElementById('side-nav');
   var dropOverlay = document.getElementById('drop-overlay');
   var filePicker = document.getElementById('file-picker');
@@ -62,6 +62,29 @@
     docBox.style.display = show ? 'block' : 'none';
     emptyState.style.display = show ? 'none' : '';
     document.body.classList.toggle('is-empty', !show);
+    // 下載側鍵只在有開檔時出現（.side-tool 預設 flex）
+    if (downloadBtn) downloadBtn.style.display = show ? 'flex' : 'none';
+  }
+
+  // 「已執行」微回饋：icon 暫時變 check 800ms（家族 §5.5）
+  function setIconDone(el) {
+    var i = el && el.querySelector('i');
+    if (!i) return;
+    var orig = i.textContent;
+    i.textContent = 'check';
+    setTimeout(function () { i.textContent = orig; }, 800);
+  }
+
+  // 下載目前開啟的原始檔（逐段編碼 href + 原檔名 download）
+  function downloadCurrent() {
+    if (!state.current) return;
+    var a = document.createElement('a');
+    a.href = L.encodePath(state.current);
+    a.download = state.name || L.basename(state.current);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setIconDone(downloadBtn);
   }
 
   function clearOutput() {
@@ -140,8 +163,6 @@
     markActive(link);
     showDoc(true);
     showLoading();
-    docOpen.href = L.encodePath(link);
-    docOpen.setAttribute('download', state.name);
     clearOutput();
     return L.fetchArrayBuffer(link)
       .then(function (buf) {
@@ -320,6 +341,7 @@
     });
     document.getElementById('setting-mode').addEventListener('click', toggleTheme);
     document.getElementById('setting-lang').addEventListener('click', cycleLang);
+    document.getElementById('setting-download').addEventListener('click', downloadCurrent);
     document.getElementById('setting-clear').addEventListener('click', clearFolder);
 
     window.addEventListener('popstate', function () {

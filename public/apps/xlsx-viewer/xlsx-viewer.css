@@ -190,24 +190,6 @@ body.is-empty main {
   font-weight: 500;
 }
 
-.xv-toolbar a.xv-open {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  color: var(--text);
-  opacity: .8;
-  transition: opacity .15s, color .15s;
-}
-
-.xv-toolbar a.xv-open:hover {
-  opacity: 1;
-  color: var(--accent);
-}
-
-.xv-toolbar a.xv-open i {
-  font-size: 20px;
-}
-
 /* Sheet tabs（Materialize .tabs；深色由 materialize-dark.css，indicator/active 跟 --accent） */
 #xv-tabs-wrap {
   position: sticky;
