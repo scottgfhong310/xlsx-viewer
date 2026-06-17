@@ -1,0 +1,518 @@
+/* xlsx-viewer — 頁面樣式
+ * 含主題 token（light/dark）與本頁專屬樣式；共用工具列樣式見 side-tool.css，
+ * 載入點 utility 見 thinking-dot.css，Materialize 元件（含 tabs）深色見 materialize-dark.css。
+ *
+ * 表格（lib 產出的 HTML 字串）渲染在 light DOM、受本檔 CSS 影響。
+ * 外殼與**表格**都跟 data-theme 切換深淺；表格色由 --tbl-* token 提供（深色時表格也轉深）。
+ */
+
+/* ===== 主題變數（light / dark；家族標準 token + 表格 token） ===== */
+:root,
+[data-theme="dark"] {
+  --bg: #0f1115;
+  --surface: #161a22;
+  --surface-2: #1b2030;
+  --text: #e8eaf0;
+  --muted: #a8b0c0;
+  --border: rgba(255, 255, 255, 0.12);
+  --accent: #90caf9;
+  --card-bg: #0f1115;
+  --tool-bg: #1b2030;
+  --tool-fg: #e8eaf0;
+  --overlay: rgba(10, 14, 22, 0.84);
+  --drop-border: #3a4252;
+  /* 表格（深色） */
+  --tbl-bg: #161a22;
+  --tbl-cell-fg: #e8eaf0;
+  --tbl-border: rgba(255, 255, 255, 0.14);
+  --tbl-head-bg: #1b2030;
+  --tbl-head-fg: #a8b0c0;
+  --tbl-zebra: rgba(255, 255, 255, 0.03);
+  --tbl-hover: rgba(144, 202, 249, 0.10);
+  --cell-bool: #64b5f6;
+  --cell-date: #ce93d8;
+  --cell-error: #ef9a9a;
+  --tbl-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] {
+  --bg: #f6f8fa;
+  --surface: #ffffff;
+  --surface-2: #eef1f5;
+  --text: #1f2328;
+  --muted: #57606a;
+  --border: rgba(0, 0, 0, 0.12);
+  --accent: #0969da;
+  --card-bg: #ffffff;
+  --tool-bg: #ffffff;
+  --tool-fg: #1f2328;
+  --overlay: rgba(240, 243, 247, 0.86);
+  --drop-border: #c4ccd6;
+  /* 表格（淺色＝白底黑字，像真實試算表） */
+  --tbl-bg: #ffffff;
+  --tbl-cell-fg: #1f2328;
+  --tbl-border: #d0d7de;
+  --tbl-head-bg: #f1f3f4;
+  --tbl-head-fg: #555555;
+  --tbl-zebra: #fafbfc;
+  --tbl-hover: #eef6ee;
+  --cell-bool: #1565c0;
+  --cell-date: #6a1b9a;
+  --cell-error: #c62828;
+  --tbl-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* 讓共用 materialize-dark.css 的 Materialize 元件（tabs / toast…）跟著本頁 --accent，而非 teal。 */
+html.dark-mode,
+html.light-mode {
+  --mz-primary: var(--accent);
+  --mz-focus: var(--accent);
+  --mz-surface: var(--surface);
+  --mz-text: var(--text);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC",
+    "Microsoft JhengHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
+  transition: background .2s ease, color .2s ease;
+}
+
+main {
+  padding: 18px 0 48px;
+}
+
+body.is-empty main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px 0;
+  box-sizing: border-box;
+}
+
+.app-container {
+  width: 94%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ===== 空狀態 / 拖拉提示 ===== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 340px;
+  color: var(--muted);
+  border: 2px dashed var(--drop-border);
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 32px;
+  transition: border-color .15s, color .15s, background .15s;
+}
+
+.empty-state:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.empty-state .material-icons {
+  font-size: 64px;
+  margin-bottom: 8px;
+  opacity: .85;
+}
+
+.empty-state h5 {
+  margin: 6px 0;
+  font-weight: 600;
+}
+
+.empty-state .hint {
+  font-size: .9rem;
+  opacity: .8;
+  max-width: 480px;
+  line-height: 1.7;
+}
+
+.empty-state code {
+  background: var(--surface-2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .85em;
+}
+
+/* ===== 已載入：toolbar + sheet tabs + 表格 ===== */
+#xv-doc {
+  display: none;
+}
+
+.xv-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px 10px 0 0;
+  font-size: 13px;
+}
+
+.xv-toolbar .xv-doc-icon {
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.xv-toolbar .xv-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.xv-toolbar .xv-title strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.xv-toolbar a.xv-open {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  color: var(--text);
+  opacity: .8;
+  transition: opacity .15s, color .15s;
+}
+
+.xv-toolbar a.xv-open:hover {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.xv-toolbar a.xv-open i {
+  font-size: 20px;
+}
+
+/* Sheet tabs（Materialize .tabs；深色由 materialize-dark.css，indicator/active 跟 --accent） */
+#xv-tabs-wrap {
+  position: sticky;
+  top: 41px;
+  z-index: 11;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+#xv-tabs-wrap .tabs {
+  background: transparent;
+  height: 42px;
+  line-height: 42px;
+}
+
+#xv-tabs-wrap .tabs .tab a {
+  color: var(--muted);
+  text-transform: none;
+  font-weight: 500;
+}
+
+#xv-tabs-wrap .tabs .tab a:hover,
+#xv-tabs-wrap .tabs .tab a.active {
+  color: var(--accent);
+}
+
+#xv-tabs-wrap .tabs .indicator {
+  background-color: var(--accent);
+}
+
+/* 工作表面板（內部捲動 + sticky 表頭） */
+#xv-container {
+  border: 1px solid var(--border);
+  border-top: 0;
+  border-radius: 0 0 10px 10px;
+  background: var(--surface);
+}
+
+.sheet-panel {
+  overflow: auto;
+  max-height: calc(100vh - 200px);
+}
+
+.sheet-panel:not(.active) {
+  display: none;
+}
+
+.sheet-empty {
+  padding: 28px;
+  color: var(--muted);
+}
+
+table.xlsx-table {
+  border-collapse: collapse;
+  width: auto;
+  font-size: 14px;
+  color: var(--tbl-cell-fg);
+  background: var(--tbl-bg);
+}
+
+table.xlsx-table th,
+table.xlsx-table td {
+  border: 1px solid var(--tbl-border);
+  padding: 6px 10px;
+  vertical-align: top;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 480px;
+}
+
+/* 欄頭（A B C…）/ 列頭（1 2 3…）：sticky */
+table.xlsx-table thead th,
+table.xlsx-table tbody th.row-head {
+  background: var(--tbl-head-bg);
+  color: var(--tbl-head-fg);
+  font-weight: 500;
+  text-align: center;
+  position: sticky;
+  z-index: 2;
+}
+
+table.xlsx-table thead th {
+  top: 0;
+}
+
+table.xlsx-table thead th.corner,
+table.xlsx-table tbody th.row-head {
+  left: 0;
+  z-index: 3;
+  min-width: 40px;
+}
+
+table.xlsx-table thead th.corner {
+  z-index: 4;
+}
+
+table.xlsx-table tbody tr:nth-child(even) td {
+  background: var(--tbl-zebra);
+}
+
+table.xlsx-table tbody tr:hover td {
+  background: var(--tbl-hover);
+}
+
+/* 型別提示 */
+.cell-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.cell-bool {
+  text-align: center;
+  color: var(--cell-bool);
+}
+
+.cell-date {
+  color: var(--cell-date);
+}
+
+.cell-error {
+  color: var(--cell-error);
+}
+
+/* ===== 全頁拖拉覆蓋層 ===== */
+#drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--overlay);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+
+#drop-overlay.show {
+  display: flex;
+}
+
+#drop-overlay .drop-box {
+  border: 3px dashed var(--accent);
+  border-radius: 16px;
+  padding: 40px 64px;
+  text-align: center;
+  color: var(--text);
+  font-size: 1.2rem;
+}
+
+#drop-overlay .material-icons {
+  font-size: 72px;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ===== Sidenav（檔案清單） ===== */
+.sidenav {
+  background: var(--surface) !important;
+  left: auto !important;
+  right: 0 !important;
+}
+
+.sidenav .subheader {
+  height: auto !important;
+  min-height: 0 !important;
+  line-height: 1.4 !important;
+  padding: 12px 20px !important;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--muted) !important;
+}
+
+.sidenav .subheader .material-icons {
+  margin-top: 1px;
+}
+
+.sidenav .subheader .path {
+  display: block;
+  font-size: .76rem;
+  opacity: .8;
+  word-break: break-all;
+}
+
+.sidenav li>a {
+  height: auto !important;
+  line-height: 1.4 !important;
+  padding: 11px 20px !important;
+  color: var(--text) !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidenav li>a .material-icons {
+  color: var(--muted) !important;
+  margin: 0;
+}
+
+.sidenav li.active {
+  background: rgba(127, 127, 127, 0.14) !important;
+}
+
+.sidenav li.active>a,
+.sidenav li.active>a .material-icons {
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+
+.sidenav .divider {
+  background-color: var(--border) !important;
+}
+
+.file-meta {
+  font-size: .72rem;
+  color: var(--muted) !important;
+  margin-left: auto;
+  padding-left: 8px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  opacity: .8;
+}
+
+/* ===== 載入動畫 ===== */
+#loading {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: var(--overlay);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+
+#loading.show {
+  display: flex;
+}
+
+#loading .thinking-dot {
+  --td-color: var(--accent);
+}
+
+#loading .loading-text {
+  color: var(--muted);
+  font-size: .9rem;
+  letter-spacing: .05em;
+}
+
+@media (max-width: 700px) {
+  .app-container {
+    width: 100%;
+  }
+
+  .sheet-panel {
+    max-height: calc(100vh - 190px);
+  }
+
+  table.xlsx-table th,
+  table.xlsx-table td {
+    padding: 4px 6px;
+    font-size: 13px;
+  }
+}
+
+@media print {
+
+  #toast-container {
+    display: none !important;
+  }
+
+  #loading,
+  .sidenav,
+  .sidenav-overlay,
+  .xv-toolbar,
+  #xv-tabs-wrap {
+    display: none !important;
+  }
+
+  html,
+  body,
+  main,
+  #xv-container {
+    background: #fff !important;
+  }
+
+  /* 列印一律白底黑字、所有 sheet 都展開 */
+  .sheet-panel {
+    display: block !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  table.xlsx-table {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  table.xlsx-table th,
+  table.xlsx-table td {
+    border-color: #999 !important;
+  }
+}

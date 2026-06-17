@@ -1,0 +1,25 @@
+{
+  "name": "xlsx-viewer",
+  "version": "1.0.0",
+  "description": "在瀏覽器內檢視 Excel / 試算表（.xlsx/.xlsm/.xls/.csv）的單頁 WebApp（SheetJS：多工作表分頁、合併儲存格、型別著色）+ 輕量 Express 後端（上傳 / 列表 / 清空）。",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [
+    "xlsx",
+    "excel",
+    "spreadsheet",
+    "viewer",
+    "sheetjs",
+    "csv",
+    "express",
+    "materialize"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.0"
+  }
+}

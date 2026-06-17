@@ -1,0 +1,26 @@
+/* English (en) */
+I18n.register('en', {
+  'title.suffix': 'XLSX Viewer',
+  'empty.title': 'Drag a spreadsheet anywhere on the page',
+  'empty.hint': 'Files are uploaded to <code>/upload/xlsx-viewer</code> (same name overwrites);<br />or <u>click to choose a file</u>. Supports <code>.xlsx</code> / <code>.xlsm</code> / <code>.xls</code> / <code>.csv</code>.<br />You can also open one directly with <code>?xlsx=&lt;path&gt;</code>.',
+  'drop.text': 'Release to upload to /upload/xlsx-viewer',
+  'side.header': 'Files',
+  'side.noFiles': 'No files yet — drag one in to upload',
+  'loading': 'Loading…',
+  'tool.menu': 'File list',
+  'tool.mode': 'Toggle light / dark',
+  'tool.lang': 'Language',
+  'tool.clear': 'Clear /upload/xlsx-viewer',
+  'tool.download': 'Download the original file',
+  'toast.badLink': 'Path not allowed (blocks traversal / external protocols)',
+  'toast.loadFail': 'Failed to load: {n} ({m})',
+  'toast.notXlsx': 'Please drop a spreadsheet (.xlsx / .xlsm / .xls / .csv)',
+  'toast.noSheets': 'The file has no worksheets',
+  'toast.engineMissing': 'Parser not loaded yet — please reload the page',
+  'toast.uploaded': 'Uploaded: {n}',
+  'toast.uploadFail': 'Upload failed: {n} ({m})',
+  'toast.listFail': 'Failed to load file list: {m}',
+  'toast.cleared': 'Cleared {n} file(s)',
+  'toast.clearFail': 'Clear failed: {m}',
+  'confirm.clear': 'Clear all files under /upload/xlsx-viewer? This cannot be undone.'
+}, 'English');

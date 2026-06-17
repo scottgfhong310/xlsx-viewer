@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="dark" class="dark-mode">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <title>XLSX Viewer</title>
+
+  <!-- 防閃爍開機腳本：render 前先依 localStorage 設好 data-theme（預設 dark），
+       同時 toggle dark-mode / light-mode class 驅動共用 materialize-dark.css（見家族 §5.1）。 -->
+  <script>
+    (function () {
+      var t = 'dark';
+      try { var s = localStorage.getItem('xlsx-viewer-theme'); if (s === 'light' || s === 'dark') t = s; } catch (e) {}
+      var r = document.documentElement;
+      r.setAttribute('data-theme', t);
+      r.classList.toggle('dark-mode', t === 'dark');
+      r.classList.toggle('light-mode', t === 'light');
+    })();
+  </script>
+
+  <!-- Materialize 1.0.0 + Material Icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+  <link rel="stylesheet" href="./materialize-dark.css" />
+
+  <link rel="stylesheet" href="./xlsx-viewer.css" />
+  <link rel="stylesheet" href="./thinking-dot.css" /> <!-- 共用 utility：Claude 風「思考中」脈動點 .thinking-dot -->
+  <link rel="stylesheet" href="./side-tool.css" />
+</head>
+
+<body class="is-empty">
+  <!-- 檔案清單側欄 -->
+  <ul id="slide-out" class="sidenav" style="width: 340px;">
+    <li>
+      <a class="subheader">
+        <i class="material-icons">folder_open</i>
+        <span><span id="side-header-label" data-i18n="side.header">Files</span><span
+            class="path">/upload/xlsx-viewer</span></span>
+      </a>
+    </li>
+    <li>
+      <div class="divider"></div>
+    </li>
+    <div id="side-nav"></div>
+  </ul>
+
+  <main>
+    <div class="app-container">
+      <!-- 空狀態：可點擊選檔，也接受全頁拖拉 -->
+      <div id="empty-state" class="empty-state">
+        <i class="material-icons">cloud_upload</i>
+        <h5 id="empty-title" data-i18n="empty.title">Drag a spreadsheet anywhere on the page</h5>
+        <div class="hint" id="empty-hint" data-i18n-html="empty.hint">
+          Files are uploaded to <code>/upload/xlsx-viewer</code> (same name overwrites);<br />
+          or <u>click to choose a file</u>. Supports <code>.xlsx</code> / <code>.xlsm</code> / <code>.xls</code> / <code>.csv</code>.<br />
+          You can also open one directly with <code>?xlsx=&lt;path&gt;</code>.
+        </div>
+      </div>
+
+      <!-- 已載入：toolbar（檔名 + 下載原始檔）+ sheet tabs + 表格容器 -->
+      <div id="xv-doc">
+        <div class="xv-toolbar">
+          <i class="material-icons xv-doc-icon">grid_on</i>
+          <div class="xv-title"><strong id="xv-doc-name"></strong></div>
+          <a id="xv-doc-open" class="xv-open" href="#" download
+            data-i18n-title="tool.download" title="下載原始檔">
+            <i class="material-icons">file_download</i>
+          </a>
+        </div>
+        <div id="xv-tabs-wrap" style="display:none">
+          <ul id="xv-tabs" class="tabs tabs-fixed-width"></ul>
+        </div>
+        <!-- 每個工作表一個 .sheet-panel（lib 組出表格字串塞入；表格著色由 xlsx-viewer.css 依主題） -->
+        <div id="xv-container"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 載入動畫 -->
+  <div id="loading" aria-hidden="true">
+    <div class="thinking-dot"></div>
+    <div class="loading-text" data-i18n="loading">載入中…</div>
+  </div>
+
+  <!-- 全頁拖拉覆蓋層 -->
+  <div id="drop-overlay">
+    <div class="drop-box">
+      <i class="material-icons">file_download</i>
+      <span id="drop-text" data-i18n="drop.text">Release to upload to /upload/xlsx-viewer</span>
+    </div>
+  </div>
+
+  <!-- 隱藏的檔案選擇器 -->
+  <input type="file" id="file-picker" multiple
+    accept=".xlsx,.xlsm,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
+    style="display:none;" />
+
+  <!-- ===== 右側工具列（flex 容器自動堆疊，見家族 §5.5） ===== -->
+  <div class="side-tools">
+    <div id="setting-menu" class="side-tool" data-i18n-title="tool.menu" title="檔案清單">
+      <i class="material-icons">folder_open</i>
+    </div>
+    <div id="setting-mode" class="side-tool" data-i18n-title="tool.mode" title="切換 light / dark">
+      <i class="material-icons">dark_mode</i>
+    </div>
+    <div id="setting-lang" class="side-tool" data-i18n-title="tool.lang" title="Language">
+      <i class="material-icons">translate</i>
+    </div>
+    <div id="setting-clear" class="side-tool" data-i18n-title="tool.clear" title="清空 /upload/xlsx-viewer">
+      <i class="material-icons">delete_sweep</i>
+    </div>
+  </div>
+
+  <!-- 依賴：jQuery / Materialize / Lodash / SheetJS / XlsxViewerLib -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="./xlsx-viewer-lib.js"></script>
+
+  <!-- i18n 引擎 + 語言字典 -->
+  <script src="./i18n.js"></script>
+  <script src="./locales/zh-Hant.js"></script>
+  <script src="./locales/en.js"></script>
+  <script src="./locales/ja.js"></script>
+
+  <script src="./xlsx-viewer.js"></script>
+</body>
+
+</html>

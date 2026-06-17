@@ -1,0 +1,26 @@
+/* 日本語 (ja) */
+I18n.register('ja', {
+  'title.suffix': 'XLSX Viewer',
+  'empty.title': 'スプレッドシートをページ上にドラッグ＆ドロップ',
+  'empty.hint': 'ファイルは <code>/upload/xlsx-viewer</code> にアップロードされます（同名は上書き）。<br />または<u>クリックしてファイルを選択</u>。対応：<code>.xlsx</code> / <code>.xlsm</code> / <code>.xls</code> / <code>.csv</code>。<br /><code>?xlsx=&lt;パス&gt;</code> で直接開くこともできます。',
+  'drop.text': '離して /upload/xlsx-viewer にアップロード',
+  'side.header': 'ファイル一覧',
+  'side.noFiles': 'ファイルがありません。ドラッグしてアップロード',
+  'loading': '読み込み中…',
+  'tool.menu': 'ファイル一覧',
+  'tool.mode': 'ライト / ダーク切替',
+  'tool.lang': '言語',
+  'tool.clear': '/upload/xlsx-viewer を空にする',
+  'tool.download': '元のファイルをダウンロード',
+  'toast.badLink': '許可されないパス（トラバーサル / 外部プロトコルを遮断）',
+  'toast.loadFail': '読み込み失敗：{n}（{m}）',
+  'toast.notXlsx': 'スプレッドシート（.xlsx / .xlsm / .xls / .csv）をドロップしてください',
+  'toast.noSheets': 'ファイルにワークシートがありません',
+  'toast.engineMissing': 'パーサが未読み込みです。ページを再読み込みしてください',
+  'toast.uploaded': 'アップロード完了：{n}',
+  'toast.uploadFail': 'アップロード失敗：{n}（{m}）',
+  'toast.listFail': 'ファイル一覧の取得に失敗：{m}',
+  'toast.cleared': '{n} 件のファイルを削除しました',
+  'toast.clearFail': '削除に失敗：{m}',
+  'confirm.clear': '/upload/xlsx-viewer 内のすべてのファイルを削除しますか？この操作は取り消せません。'
+}, '日本語');
