@@ -68,7 +68,7 @@ xlsx-viewer.js（控制器，碰 DOM）
 | `buildSheetTable(ws)` | **一張工作表 → `<table>` HTML 字串**：欄/列頭、合併儲存格（`!merges`→rowspan/colspan + skip）、欄寬（`!cols`）、型別著色（優先用格式化字串 `cell.w`，退到 `cell.v`）、`escapeHtml` 內容 |
 
 ### 4.4 `xlsx-viewer.js`（控制器，碰 DOM）
-- `renderWorkbook(wb)`：每張 sheet → `<li class="tab">` + `.sheet-panel`（內含 `L.buildSheetTable`）；**多工作表**才顯示 tab bar（手動切換 `.active` + `M.Tabs.init` 顯示 indicator），**單一工作表隱藏 tab bar**。
+- `renderWorkbook(wb)`：每張 sheet → `<li class="tab">` + `.sheet-panel`（內含 `L.buildSheetTable`）；**多工作表**才顯示 tab bar（**自管切換**：click handler toggle `.active` + CSS 底線；**不用 `M.Tabs.init`**），**單一工作表隱藏 tab bar**。tab 以 flex 等分縮放 + 省略號（`title` 顯示全名）。
 - `applyTheme/toggleTheme`：切 `data-theme`，**不重建表格**（表格由 CSS 著色）。
 - **工具列開關**：右上角**無外框** icon `#tools-toggle`（`more_vert`）切換 `body.tools-hidden`（隱藏整排 `.side-tools`），狀態存 `localStorage('xlsx-viewer-tools')`、預設顯示；toggle 本身恆顯示可再開啟，側欄開啟時連同 toggle 淡出。**本 app 特有**——樣式只在 `xlsx-viewer.css`，**不動共用 `side-tool.css`**。
 - 其餘同家族：清單 / 上傳 / 清空 / 拖拉 / i18n / `?xlsx=` 深連結 / `#setting-download` 下載側鍵（§4.7）。
@@ -79,7 +79,7 @@ xlsx-viewer.js（控制器，碰 DOM）
 2. **「表格組字串」進 lib（與 docx/pptx 不同）。** SheetJS 解析出的是**純資料物件**，「工作表 → HTML 字串」是純字串運算 → 依家族 §4.7 應放 lib（`buildSheetTable`）。控制器只負責塞 DOM + 接 tabs。這是本支與 docx-preview/PPTXjs（引擎寫 DOM、渲染留控制器）的關鍵差異。
 3. **表格跟主題（深色表格）。** 以 `--tbl-*` 兩主題供色；型別色、斑馬紋、邊框都有深色變體。
 4. **白名單 xlsx/xlsm/xls/csv。** SheetJS 本就能讀，多收成本低（一條 regex），更實用；app 名與 folder 維持 `xlsx-viewer`。
-5. **多工作表 UI：Materialize tabs。** 單一工作表時隱藏 tab bar（避免單顆 fixed-width tab 佔滿一列的突兀）。
+5. **多工作表 UI：自管分頁（不靠 Materialize Tabs JS）。** 用 `.tabs` 樣式 + 自寫 click 切換 + CSS 底線標示作用中；**不呼叫 `M.Tabs.init`**——它的 `.indicator` 以「縮放前」寬度計算，reload 時會留下多餘橫向捲動條。tab 以 flex 等分縮放 + 省略號（`title` 顯示全名）；單一工作表隱藏 tab bar。
 6. **下載走側鍵**（家族 §4.7）。
 7. **全視窗版面（非置中卡片）。** 試算表常欄多、列長，置中 `max-width` 卡片浪費橫向空間且雙捲軸卡頓 → 改 edge-to-edge 滿版：`#xv-doc` 撐滿 `100vh`、toolbar/tabs 固定、表格面板填滿下方並**單一內部捲動**（表頭/列頭 sticky）。空狀態維持置中卡片感。控制器 `showDoc` 顯示時設 `display:flex`（非 `block`）。
 8. **工具列開關（本 app 特有）。** 全視窗下浮動側鍵會疊在表格上 → 右上角加一顆**無外框** icon（`more_vert`）切換 `.side-tools` 顯示、狀態持久化。樣式只在 `xlsx-viewer.css`、**不動共用 `side-tool.css`**（避免家族資產分歧）；其他 viewer 若要比照再各自加。

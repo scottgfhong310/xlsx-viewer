@@ -36,7 +36,7 @@ npm install && node app.js          # → http://localhost:3000/apps/xlsx-viewer
   - `isSafeLink()`：擋 `..`、反斜線、scheme、protocol-relative `//`；絕對路徑須命中 `ALLOWED_ABSOLUTE_PREFIXES`（預設 `['/upload/xlsx-viewer/']`）。
   - `encodePath(link)` 逐段編碼；`fileUrl(name)` 回**原始**靜態路徑，fetch / 下載時才 `encodePath`。
   - `fetchArrayBuffer`（給 `XLSX.read`）/ `listFiles` / `uploadFile` / `clearFolder`；`basename` / `formatSize` / `timestamp`。
-- **控制器** `xlsx-viewer.js`（碰 DOM）：主題切換、i18n、拖拉 / 上傳、檔案清單、`renderWorkbook(wb)`（多 sheet → Materialize tabs + `.sheet-panel`，**單一工作表隱藏 tab bar**；手動切換 `.active` + `M.Tabs.init` 顯示 indicator）、`?xlsx=` 深連結。切檔時 `clearOutput()` 再渲染。
+- **控制器** `xlsx-viewer.js`（碰 DOM）：主題切換、i18n、拖拉 / 上傳、檔案清單、`renderWorkbook(wb)`（多 sheet → `.tabs` + `.sheet-panel`，**單一工作表隱藏 tab bar**；**自管切換**：click toggle `.active` + CSS 底線，**不用 `M.Tabs.init`**；tab flex 等分縮放 + 省略號 + `title`）、`?xlsx=` 深連結。切檔時 `clearOutput()` 再渲染。
 - **主題（含「表格」）**：CSS 變數 light/dark，**預設 dark**（`localStorage('xlsx-viewer-theme')||'dark'`）；防閃爍開機腳本同時 toggle `dark-mode`/`light-mode` class 驅動 `materialize-dark.css`（§5.1）。表格在 **light DOM**，故由本頁 CSS 著色——`--tbl-*` 一組（bg/cell-fg/border/head/zebra/hover + 型別色 bool/date/error）兩主題各一份，**深色時表格也轉深**；切主題只翻 `data-theme`、**不必重建表格**。列印 `@media print` 一律白底黑字、所有 sheet 展開。
 - **全視窗版面**：`#xv-doc` 是撐滿 `100vh` 的 flex 欄（toolbar/tabs 固定、`#xv-container` `flex:1`），表格 edge-to-edge、**單一捲動區在 `.sheet-panel`**（`height:100%; overflow:auto`，表頭/列頭面板內 sticky）；`.app-container` 滿版（無 max-width 卡片框）；`body:not(.is-empty){overflow:hidden}` 避免雙捲軸；控制器 `showDoc` 顯示時設 `display:flex`（非 block）。空狀態仍置中（`.empty-state{max-width:720px;margin:0 auto}`）。
 - **i18n**：`i18n.js` + `locales/*.js`，`data-i18n`，預設 `zh-Hant`。儲存格內容是 **data，永不翻譯**。

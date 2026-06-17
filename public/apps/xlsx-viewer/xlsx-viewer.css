@@ -208,12 +208,23 @@ body.is-empty main {
   background: transparent;
   height: 42px;
   line-height: 42px;
+  overflow-x: hidden;
+  /* 不要橫向捲動條：tab 改為等分縮放 + 省略號（見下）。Materialize tabs-fixed-width 的
+     .tab 預設 min-width:auto（min-content），reload 初渲染時不會縮到容器內 → 多餘捲動條。 */
+}
+
+#xv-tabs-wrap .tabs .tab {
+  min-width: 0;
+  /* 允許 flex 縮到比文字窄，等分填滿容器、fresh / reload 都不溢出 */
 }
 
 #xv-tabs-wrap .tabs .tab a {
   color: var(--muted);
   text-transform: none;
   font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 #xv-tabs-wrap .tabs .tab a:hover,
@@ -221,8 +232,9 @@ body.is-empty main {
   color: var(--accent);
 }
 
-#xv-tabs-wrap .tabs .indicator {
-  background-color: var(--accent);
+/* 自管作用中分頁底線（取代 Materialize 的 .indicator，避免其寬度計算造成多餘捲動條） */
+#xv-tabs-wrap .tabs .tab a.active {
+  box-shadow: inset 0 -2px 0 var(--accent);
 }
 
 /* 工作表面板（內部捲動 + sticky 表頭） */

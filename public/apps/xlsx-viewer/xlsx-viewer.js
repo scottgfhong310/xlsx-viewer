@@ -133,7 +133,7 @@
     names.forEach(function (name, idx) {
       var id = 'xv-sheet-' + idx;
       var act = idx === 0 ? ' active' : '';
-      tabsHtml += '<li class="tab"><a href="#' + id + '" class="' + (idx === 0 ? 'active' : '') + '">' + _.escape(name) + '</a></li>';
+      tabsHtml += '<li class="tab"><a href="#' + id + '" title="' + _.escape(name) + '" class="' + (idx === 0 ? 'active' : '') + '">' + _.escape(name) + '</a></li>';
       panelsHtml += '<div class="sheet-panel' + act + '" id="' + id + '">' + L.buildSheetTable(wb.Sheets[name]) + '</div>';
     });
     tabs.innerHTML = tabsHtml;
@@ -150,7 +150,8 @@
         var p = document.getElementById(t);
         if (p) p.classList.add('active');
       });
-      try { M.Tabs.init(tabs, { duration: 200 }); } catch (e) {}
+      // 自管分頁切換（上面的 click handler）+ CSS 底線標示作用中；不用 M.Tabs.init——
+      // 它的 .indicator 會以「縮放前」的寬度計算，reload 時造成多餘橫向捲動條。
       tabsWrap.style.display = '';
     } else {
       tabsWrap.style.display = 'none';   // 單一工作表：免顯示 tab bar
