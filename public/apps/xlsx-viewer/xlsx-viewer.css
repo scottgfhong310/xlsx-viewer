@@ -448,6 +448,52 @@ table.xlsx-table tbody tr:hover td {
   letter-spacing: .05em;
 }
 
+/* ===== 右上角工具列開關（無外框、純 icon；只在本 app，不動共用 side-tool.css） ===== */
+.tools-toggle {
+  position: fixed;
+  top: 12px;
+  right: 14px;
+  z-index: 1003;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  transition: color .15s, transform .1s, opacity .15s;
+  user-select: none;
+}
+
+.tools-toggle:hover {
+  color: var(--text);
+}
+
+.tools-toggle:active {
+  transform: scale(.92);
+}
+
+.tools-toggle.active {
+  color: var(--accent);
+}
+
+.tools-toggle i.material-icons {
+  font-size: 24px;
+}
+
+/* 關閉時隱藏整排側鍵（toggle 本身留著供再開啟） */
+body.tools-hidden .side-tools {
+  display: none;
+}
+
+/* 側欄開啟時連同 toggle 一起淡出（比照 side-tool.css 對 .side-tools 的處理） */
+body.sidenav-open .tools-toggle {
+  opacity: 0;
+  pointer-events: none;
+}
+
 @media (max-width: 700px) {
   table.xlsx-table th,
   table.xlsx-table td {
@@ -466,7 +512,8 @@ table.xlsx-table tbody tr:hover td {
   .sidenav,
   .sidenav-overlay,
   .xv-toolbar,
-  #xv-tabs-wrap {
+  #xv-tabs-wrap,
+  .tools-toggle {
     display: none !important;
   }
 

@@ -18,6 +18,7 @@
 
   var L = window.XlsxViewerLib;
   var THEME_KEY = 'xlsx-viewer-theme';
+  var TOOLS_KEY = 'xlsx-viewer-tools';
 
   var emptyState = document.getElementById('empty-state');
   var docBox = document.getElementById('xv-doc');
@@ -29,6 +30,7 @@
   var sideNav = document.getElementById('side-nav');
   var dropOverlay = document.getElementById('drop-overlay');
   var filePicker = document.getElementById('file-picker');
+  var toolsToggle = document.getElementById('tools-toggle');
 
   var state = {
     theme: 'dark',
@@ -54,6 +56,18 @@
   function toggleTheme() {
     // 表格著色由 CSS 依 data-theme 切換；不必重建表格。
     applyTheme(state.theme === 'dark' ? 'light' : 'dark');
+  }
+
+  /* ---------- 右側工具列開關（右上角 icon） ---------- */
+
+  function applyToolsVisible(show) {
+    document.body.classList.toggle('tools-hidden', !show);
+    if (toolsToggle) toolsToggle.classList.toggle('active', show);
+    try { localStorage.setItem(TOOLS_KEY, show ? 'on' : 'off'); } catch (e) {}
+  }
+
+  function toggleTools() {
+    applyToolsVisible(document.body.classList.contains('tools-hidden'));
   }
 
   /* ---------- 顯示切換 ---------- */
@@ -344,6 +358,7 @@
     document.getElementById('setting-lang').addEventListener('click', cycleLang);
     document.getElementById('setting-download').addEventListener('click', downloadCurrent);
     document.getElementById('setting-clear').addEventListener('click', clearFolder);
+    if (toolsToggle) toolsToggle.addEventListener('click', toggleTools);
 
     window.addEventListener('popstate', function () {
       var link = deepLink();
@@ -364,6 +379,10 @@
     var saved = 'dark';
     try { saved = localStorage.getItem(THEME_KEY) || 'dark'; } catch (e) {}
     applyTheme(saved === 'light' ? 'light' : 'dark');
+
+    var savedTools = 'on';
+    try { savedTools = localStorage.getItem(TOOLS_KEY) || 'on'; } catch (e) {}
+    applyToolsVisible(savedTools !== 'off');
 
     I18n.apply(document);
     document.addEventListener('i18n:changed', onLangChanged);

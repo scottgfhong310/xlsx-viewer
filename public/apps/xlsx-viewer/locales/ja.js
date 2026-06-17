@@ -12,6 +12,7 @@ I18n.register('ja', {
   'tool.lang': '言語',
   'tool.clear': '/upload/xlsx-viewer を空にする',
   'tool.download': '元のファイルをダウンロード',
+  'tool.toggleTools': 'ツールバー切替',
   'toast.badLink': '許可されないパス（トラバーサル / 外部プロトコルを遮断）',
   'toast.loadFail': '読み込み失敗：{n}（{m}）',
   'toast.notXlsx': 'スプレッドシート（.xlsx / .xlsm / .xls / .csv）をドロップしてください',

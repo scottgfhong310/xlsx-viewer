@@ -69,6 +69,7 @@ xlsx-viewer.js（控制器，碰 DOM）
 ### 4.4 `xlsx-viewer.js`（控制器，碰 DOM）
 - `renderWorkbook(wb)`：每張 sheet → `<li class="tab">` + `.sheet-panel`（內含 `L.buildSheetTable`）；**多工作表**才顯示 tab bar（手動切換 `.active` + `M.Tabs.init` 顯示 indicator），**單一工作表隱藏 tab bar**。
 - `applyTheme/toggleTheme`：切 `data-theme`，**不重建表格**（表格由 CSS 著色）。
+- **工具列開關**：右上角**無外框** icon `#tools-toggle`（`more_vert`）切換 `body.tools-hidden`（隱藏整排 `.side-tools`），狀態存 `localStorage('xlsx-viewer-tools')`、預設顯示；toggle 本身恆顯示可再開啟，側欄開啟時連同 toggle 淡出。**本 app 特有**——樣式只在 `xlsx-viewer.css`，**不動共用 `side-tool.css`**。
 - 其餘同家族：清單 / 上傳 / 清空 / 拖拉 / i18n / `?xlsx=` 深連結 / `#setting-download` 下載側鍵（§4.7）。
 
 ## 5. 關鍵設計決策（與理由 / 替代方案）
@@ -80,6 +81,7 @@ xlsx-viewer.js（控制器，碰 DOM）
 5. **多工作表 UI：Materialize tabs。** 單一工作表時隱藏 tab bar（避免單顆 fixed-width tab 佔滿一列的突兀）。
 6. **下載走側鍵**（家族 §4.7）。
 7. **全視窗版面（非置中卡片）。** 試算表常欄多、列長，置中 `max-width` 卡片浪費橫向空間且雙捲軸卡頓 → 改 edge-to-edge 滿版：`#xv-doc` 撐滿 `100vh`、toolbar/tabs 固定、表格面板填滿下方並**單一內部捲動**（表頭/列頭 sticky）。空狀態維持置中卡片感。控制器 `showDoc` 顯示時設 `display:flex`（非 `block`）。
+8. **工具列開關（本 app 特有）。** 全視窗下浮動側鍵會疊在表格上 → 右上角加一顆**無外框** icon（`more_vert`）切換 `.side-tools` 顯示、狀態持久化。樣式只在 `xlsx-viewer.css`、**不動共用 `side-tool.css`**（避免家族資產分歧）；其他 viewer 若要比照再各自加。
 
 ## 6. lib / 控制器邊界（家族 §4.7）
 

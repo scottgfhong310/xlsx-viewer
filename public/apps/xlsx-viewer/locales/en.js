@@ -12,6 +12,7 @@ I18n.register('en', {
   'tool.lang': 'Language',
   'tool.clear': 'Clear /upload/xlsx-viewer',
   'tool.download': 'Download the original file',
+  'tool.toggleTools': 'Toggle the tool rail',
   'toast.badLink': 'Path not allowed (blocks traversal / external protocols)',
   'toast.loadFail': 'Failed to load: {n} ({m})',
   'toast.notXlsx': 'Please drop a spreadsheet (.xlsx / .xlsm / .xls / .csv)',

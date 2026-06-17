@@ -12,6 +12,7 @@ I18n.register('zh-Hant', {
   'tool.lang': '語言',
   'tool.clear': '清空 /upload/xlsx-viewer',
   'tool.download': '下載原始檔',
+  'tool.toggleTools': '工具列開關',
   'toast.badLink': '不允許的路徑（擋路徑穿越 / 外部協定）',
   'toast.loadFail': '載入失敗：{n}（{m}）',
   'toast.notXlsx': '請拖入試算表（.xlsx / .xlsm / .xls / .csv）',
