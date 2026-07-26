@@ -16,7 +16,7 @@ routes/xlsx-viewer.js               # GET /files、POST /clear
 public/apps/xlsx-viewer/            # 前端（服務於 /apps/xlsx-viewer/）
 ├─ index.html · xlsx-viewer.css · xlsx-viewer.js · xlsx-viewer-lib.js
 ├─ materialize-dark.css             # 家族共用（Materialize 深色；materialize.css 之後載入）
-├─ side-tool.css                    # 〔正統〕flex .side-tools 版（§5.5）
+├─ side-tool.css · side-tool.js     # 家族共用側鍵：〔正統〕flex .side-tools 樣式＋setIconDone 行為（權威版＝家族 repo，§5.5）
 ├─ thinking-dot.css                 # 共用載入點 utility（權威版＝獨立 repo thinking-dot；本份消費、byte-identical 同步；載入點預設 2026-07-19 隨權威統一 14px→27px/2.1s）
 ├─ i18n.js · locales/{zh-Hant,en,ja}.js
 public/upload/xlsx-viewer/          # 上傳的試算表（內容不進版控；附一個 .xlsx sample）
