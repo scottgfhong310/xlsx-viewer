@@ -11,7 +11,7 @@
 
 ```
 app.js                              # Express 入口：port 3000；/ → 302 /apps/xlsx-viewer/
-routes/upload.js                    # POST /api/upload?folder=xlsx-viewer（共用最小版；含檔名消毒 sanitizeUploadName，§3.4）
+routes/upload.js                    # POST /api/upload?folder=xlsx-viewer（家族共用最小版：權威版＝ nodeapp-webapp-family/routes-upload.js，byte-identical；含檔名消毒 sanitizeUploadName，§3.4）
 routes/xlsx-viewer.js               # GET /files、POST /clear
 public/apps/xlsx-viewer/            # 前端（服務於 /apps/xlsx-viewer/）
 ├─ index.html · xlsx-viewer.css · xlsx-viewer.js · xlsx-viewer-lib.js
