@@ -503,14 +503,9 @@ body.tools-hidden .side-tools {
   display: none;
 }
 
-/* 側鍵讓開內層捲軸（app-shell 特有；比照 local-reader / ollama-chat）：本 app 的頁面捲軸在
-   「目前作用中的 .sheet-panel」上、不在 viewport，而 .side-tools 是 fixed——right:12px 量的是
-   視窗實體右緣，表格一長出捲軸側鍵就壓在上面。--content-sb 由 JS 量出捲軸實寬（overlay 捲軸＝0、
-   經典捲軸＝~15px），使側鍵離視窗右緣的視覺距離與 markdown-reader（捲軸在 viewport、fixed 自動
-   避開）一致。選擇器加 html 提高特異度，蓋過稍後載入的 side-tool.css 的 .side-tools{right:12px}。 */
-html .side-tools {
-  right: calc(12px + var(--content-sb, 0px));
-}
+/* 捲軸補償已收進共用 side-tool.css（§5.5）：那邊的 .side-tools 直接寫成
+   right: calc(12px + var(--content-sb, 0px))，本檔只需由控制器把量到的捲軸寬寫進
+   --content-sb 即可（見 <name>.js 的 updateSideToolsSB）。 */
 
 /* 側欄開啟時連同 toggle 一起淡出（比照 side-tool.css 對 .side-tools 的處理） */
 body.sidenav-open .tools-toggle {
