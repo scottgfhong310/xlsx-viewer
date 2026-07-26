@@ -42,6 +42,14 @@ npm install && node app.js          # → http://localhost:3000/apps/xlsx-viewer
 - **i18n**：`i18n.js` + `locales/*.js`，`data-i18n`，預設 `zh-Hant`。儲存格內容是 **data，永不翻譯**。
 - **side-tool**：`#setting-menu`（檔案清單）/ `#setting-mode` / `#setting-lang` / `#setting-download`（下載原始檔，只在開檔時顯示、臨時 `<a download>` + check 回饋、href 經 `encodePath`）/ `#setting-clear`（清空，hover 轉紅）；〔正統〕flex `.side-tools`。**下載走側鍵、toolbar 不放操作鍵**（家族 §4.7）。
 - **工具列開關（本 app 特有）**：右上角**無外框** icon `#tools-toggle`（`more_vert`，垂直對齊 toolbar 檔名列）→ `body.tools-hidden` 隱藏 `.side-tools`，存 `localStorage('xlsx-viewer-tools')`、預設顯示；toggle 恆在可再開、側欄開啟時淡出。樣式只在 `xlsx-viewer.css`，**不動共用 `side-tool.css`**。
+- **側鍵要讓開內層捲軸（app-shell 的坑，2026-07-26 補）**：本 app 是 app-shell（`body{overflow:hidden}`、
+  頁面捲軸在**目前作用中的 `.sheet-panel`** 上），而 `.side-tools` 是 `position:fixed`——**視窗沒有捲軸時
+  `right:12px` 量的是視窗實體右緣**，於是表格一長出捲軸，側鍵就壓在捲軸上（`.sheet-panel` 右緣貼齊 viewport）。
+  對照組 `markdown-reader` 是視窗捲動，經典捲軸會縮小視口、fixed 自動避開。
+  補償比照 `local-reader`／`ollama-chat`：`html .side-tools { right: calc(12px + var(--content-sb, 0px)) }`
+  ＋控制器 `updateSideToolsSB()` 量捲軸實寬寫進 `--content-sb`。**本 app 特有的是「面板每張工作表一個、
+  切分頁會換人」**，所以要動態抓 `.sheet-panel.active`，且在 `renderWorkbook` 結束／切分頁／`clearOutput`／
+  `resize` 四處各重量一次。**overlay 捲軸的機器量到 0＝不位移**，這差異只在「總是顯示捲軸」的設定下看得到。
 - **欄多橫向捲動**：`table.xlsx-table { width:max-content; min-width:100% }`——欄超過視窗時整表變寬、`.sheet-panel` 橫向捲動（欄不壓扁），列頭/corner `sticky` 在橫捲時固定；欄少時仍填滿面板。
 - **安全**：上傳白名單 `.xlsx`/`.xlsm`/`.xls`/`.csv`（picker accept + 前端 `isUploadable` 再驗）；後端操作目標寫死、`{ ok }` 信封；危險操作 `confirm()`。jQuery 3.7.1，後端不依賴 lodash。
 - **呈現範圍**：值 + 基本結構（合併、欄寬、數值格式 `cell.w`）；**不含**完整儲存格樣式（字型 / 填色 / 框線）。

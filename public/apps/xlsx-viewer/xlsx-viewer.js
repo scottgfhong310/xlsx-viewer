@@ -100,6 +100,19 @@
     tabs.innerHTML = '';
     container.innerHTML = '';
     tabsWrap.style.display = 'none';
+    updateSideToolsSB();   // 面板沒了 → 捲軸也沒了
+  }
+
+  /* ---------- 側鍵與捲軸對齊 ---------- */
+  // app-shell（body overflow:hidden）：頁面捲軸在「目前作用中的 .sheet-panel」上、不在 viewport，
+  // 故固定定位的 .side-tools（right:12px）不會自動避開它、表格一長就壓在捲軸上。量出捲軸寬度
+  // 寫進 --content-sb 讓側鍵往左讓開，與 markdown-reader（捲軸在 viewport、fixed 自動避開）一致。
+  // overlay 捲軸量到 0＝不位移（本來就一致）。比照 local-reader / ollama-chat 的同名函式。
+  // 本 app 特有：面板是「每張工作表一個」、切分頁會換人，所以要動態抓 .active 那一個。
+  function updateSideToolsSB() {
+    var panel = container.querySelector('.sheet-panel.active');
+    var sb = panel ? Math.max(0, panel.offsetWidth - panel.clientWidth) : 0;
+    document.documentElement.style.setProperty('--content-sb', sb + 'px');
   }
 
   /* ---------- loading 動畫 ---------- */
@@ -143,6 +156,7 @@
         $(container).find('.sheet-panel').removeClass('active');
         var p = document.getElementById(t);
         if (p) p.classList.add('active');
+        updateSideToolsSB();   // 換一張工作表＝換一個捲動容器，捲軸有無可能不同
       });
       // 自管分頁切換（上面的 click handler）+ CSS 底線標示作用中；不用 M.Tabs.init——
       // 它的 .indicator 會以「縮放前」的寬度計算，reload 時造成多餘橫向捲動條。
@@ -150,6 +164,8 @@
     } else {
       tabsWrap.style.display = 'none';   // 單一工作表：免顯示 tab bar
     }
+
+    updateSideToolsSB();   // 渲染完才知道表格會不會長出捲軸
   }
 
   /* ---------- 開檔 ---------- */
@@ -383,6 +399,11 @@
 
     bindEvents();
     bindDragDrop();
+
+    // 側鍵讓開內層捲軸：初始量一次，之後在渲染／切分頁時各重量一次（見 updateSideToolsSB），
+    // 視窗大小改變會改動欄寬與捲軸有無，故也綁 resize。
+    updateSideToolsSB();
+    window.addEventListener('resize', _.debounce(updateSideToolsSB, 150));
 
     var param = deepLink();
     if (param) {
