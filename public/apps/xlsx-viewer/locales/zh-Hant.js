@@ -20,6 +20,7 @@ I18n.register('zh-Hant', {
   'toast.noSheets': '檔案內沒有任何工作表',
   'toast.engineMissing': '解析引擎尚未載入，請重新整理頁面',
   'toast.uploaded': '已上傳：{n}',
+  'toast.uploadedRenamed': '同名已存在，已存為：{n}',
   'toast.uploadFail': '上傳失敗：{n}（{m}）',
   'toast.listFail': '讀取檔案清單失敗：{m}',
   'toast.cleared': '已清空 {n} 個檔案',
