@@ -10,6 +10,7 @@ I18n.register('en', {
   'tool.menu': 'File list',
   'tool.mode': 'Toggle light / dark',
   'tool.lang': 'Language',
+  'tool.more': 'More tools',
   'toast.lang': 'Switched to {name}',
   'tool.clear': 'Clear /upload/xlsx-viewer',
   'tool.download': 'Download the original file',
